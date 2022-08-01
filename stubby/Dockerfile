@@ -36,7 +36,7 @@ RUN apk add yaml libssl1.1 libcrypto1.1 yaml tini
 RUN apk --purge del apk-tools
 
 FROM scratch
-COPY stubby.yml /opt/stubby/etc/stubby/stubby.yml
+COPY stubby.yml /etc/opt/stubby/stubby/stubby.yml
 COPY --from=compile /opt/stubby /opt/stubby
 COPY --from=build /etc/ssl/certs/ /etc/ssl/certs/
 COPY --from=build /lib /lib
@@ -44,6 +44,5 @@ COPY --from=build /sbin/tini /tini
 ENV PATH /opt/stubby/bin:$PATH
 WORKDIR /opt/stubby
 EXPOSE 8053/udp
-
-CMD ["/opt/stubby/bin/stubby", "-C", "/opt/stubby/etc/stubby/stubby.yml"]
 ENTRYPOINT ["/tini", "--"]
+CMD ["/opt/stubby/bin/stubby"]
