@@ -5,6 +5,9 @@ WORKDIR /tmp/src
 RUN apk add gcc make unbound-dev musl-dev openssl-dev yaml-dev autoconf automake cmake patch
 RUN wget https://getdnsapi.net/dist/getdns-"${VERSION_GETDNS}".tar.gz
 RUN tar -xf getdns-"${VERSION_GETDNS}".tar.gz
+ADD https://github.com/getdnsapi/stubby/commit/34ca1af2e13771e917c31c2e545f33810489ea21.diff /tmp/34ca1af2e13771e917c31c2e545f33810489ea21.diff
+WORKDIR /tmp/src/getdns-"${VERSION_GETDNS}"/stubby
+RUN patch -p1 < /tmp/34ca1af2e13771e917c31c2e545f33810489ea21.diff
 WORKDIR /tmp/src/getdns-"${VERSION_GETDNS}"
 RUN mkdir build
 WORKDIR /tmp/src/getdns-"${VERSION_GETDNS}"/build
