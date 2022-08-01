@@ -38,9 +38,10 @@ RUN apk --purge del apk-tools
 FROM scratch
 COPY stubby.yml /etc/opt/stubby/stubby/stubby.yml
 COPY --from=compile /opt/stubby /opt/stubby
-COPY --from=build /etc/ssl/certs/ /etc/ssl/certs/
+COPY --from=build /etc/ssl/ /etc/ssl/
 COPY --from=build /lib /lib
 COPY --from=build /sbin/tini /tini
+ADD https://curl.se/ca/cacert.pem /cacert.pem
 ENV PATH /opt/stubby/bin:$PATH
 WORKDIR /opt/stubby
 EXPOSE 8053/udp
