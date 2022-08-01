@@ -1,22 +1,9 @@
 version: '3'
 services:
   stubby:
-    image: "mvance/stubby:latest"
-    networks:
-     - dns
-    restart: unless-stopped
-  unbound:
-    image: "mvance/unbound:1.14.0-stubby"
-    depends_on:
-      - "stubby"    
+    image: "sarim/stubby:latest"
     ports:
-     - "53:53/udp"
-     - "53:53/tcp"
-    networks:
-     - dns
+     - "53:8053/udp"
     volumes:
-      - ./unbound/a-records.conf:/opt/unbound/etc/unbound/a-records.conf:ro
+      - ./stubby/stubby.yaml:/.stubby.yaml # Use your own config file
     restart: unless-stopped
-
-networks:
-  dns:
