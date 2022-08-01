@@ -40,6 +40,7 @@ COPY stubby.yml /etc/opt/stubby/stubby/stubby.yml
 COPY --from=compile /opt/stubby /opt/stubby
 COPY --from=build /etc/ssl/ /etc/ssl/
 COPY --from=build /lib /lib
+COPY --from=build /usr/lib/libyaml* /lib
 COPY --from=build /sbin/tini /tini
 ADD https://curl.se/ca/cacert.pem /cacert.pem
 ENV PATH /opt/stubby/bin:$PATH
