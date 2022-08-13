@@ -2,15 +2,14 @@ FROM alpine:latest as compile
 ENV VERSION_GETDNS=1.7.0
 
 WORKDIR /tmp/src
-RUN apk add gcc make unbound-dev musl-dev openssl-dev openssl-libs-static yaml-dev yaml-static autoconf automake cmake patch file tini-static
-RUN wget https://getdnsapi.net/dist/getdns-"${VERSION_GETDNS}".tar.gz
-RUN tar -xf getdns-"${VERSION_GETDNS}".tar.gz
+RUN apk add gcc make unbound-dev musl-dev openssl-dev openssl-libs-static yaml-dev yaml-static autoconf automake cmake patch file tini-static git
+RUN git clone --recurse-submodules --depth 1 --branch v"${VERSION_GETDNS}" https://github.com/getdnsapi/getdns.git getdns
 ADD https://github.com/getdnsapi/stubby/commit/34ca1af2e13771e917c31c2e545f33810489ea21.diff /tmp/34ca1af2e13771e917c31c2e545f33810489ea21.diff
-WORKDIR /tmp/src/getdns-"${VERSION_GETDNS}"/stubby
+WORKDIR /tmp/src/getdns/stubby
 RUN patch -p1 < /tmp/34ca1af2e13771e917c31c2e545f33810489ea21.diff
-WORKDIR /tmp/src/getdns-"${VERSION_GETDNS}"
+WORKDIR /tmp/src/getdns
 RUN mkdir build
-WORKDIR /tmp/src/getdns-"${VERSION_GETDNS}"/build
+WORKDIR /tmp/src/getdns/build
 
 RUN cmake \
         -DBUILD_STUBBY=ON \
