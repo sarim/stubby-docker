@@ -1,9 +1,9 @@
 version: '3'
 services:
   stubby:
-    image: "sarim/stubby:latest"
+    image: "gittu/stubby-docker:latest"
     ports:
      - "53:8053/udp"
     volumes:
-      - ./stubby/stubby.yaml:/.stubby.yaml # Use your own config file
+      - ./stubbyconfig:/confg # Edit and make your own config file
     restart: unless-stopped
