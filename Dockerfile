@@ -31,27 +31,8 @@ RUN cmake \
         ..
 RUN make -j`nproc` && make install
 RUN ls -lsh /opt/stubby/bin/stubby && file /opt/stubby/bin/stubby
-ENV REL=v3.16
-ENV ARCH=aarch64
-ENV MIRROR=http://dl-cdn.alpinelinux.org/alpine
-ENV PACKAGES=alpine-baselayout
-RUN \
-  apk add --no-cache \
-    bash \
-    curl \
-    patch \
-    tar \
-    tzdata \
-    xz
-WORKDIR /tmp
-RUN wget https://raw.githubusercontent.com/gliderlabs/docker-alpine/master/builder/scripts/mkimage-alpine.bash
-RUN chmod +x mkimage-alpine.bash
-RUN ./mkimage-alpine.bash
-RUN mkdir /rootfs-out
-RUN tar xf rootfs.tar.xz -C /rootfs-out
 
 FROM scratch
-COPY --from=compile /rootfs-out /
 COPY stubby.yml /etc/opt/stubby/stubby/stubby.yml
 COPY --from=compile /opt/stubby/bin/stubby /opt/stubby/bin/stubby
 COPY --from=compile /sbin/tini-static /tini
