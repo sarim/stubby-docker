@@ -2,7 +2,7 @@ FROM alpine:latest as compile
 ENV VERSION_GETDNS=1.7.0
 
 WORKDIR /tmp/src
-RUN apk add gcc make unbound-dev musl-dev openssl-dev openssl-libs-static yaml-dev yaml-static autoconf automake cmake patch file tini-static git
+RUN apk add gcc make unbound-dev musl-dev openssl-dev openssl-libs-static yaml-dev yaml-static autoconf automake cmake patch file tini-static git busybox-static
 RUN git clone --recurse-submodules --depth 1 --branch v"${VERSION_GETDNS}" https://github.com/getdnsapi/getdns.git getdns
 ADD https://github.com/getdnsapi/stubby/commit/34ca1af2e13771e917c31c2e545f33810489ea21.diff /tmp/34ca1af2e13771e917c31c2e545f33810489ea21.diff
 WORKDIR /tmp/src/getdns/stubby
@@ -33,12 +33,14 @@ RUN make -j`nproc` && make install
 RUN ls -lsh /opt/stubby/bin/stubby && file /opt/stubby/bin/stubby
 
 FROM scratch
-COPY stubby.yml /etc/opt/stubby/stubby/stubby.yml
+COPY stubby.yml /conf/stubby.yml
 COPY --from=compile /opt/stubby/bin/stubby /opt/stubby/bin/stubby
 COPY --from=compile /sbin/tini-static /tini
+COPY --from=compile /bin/busybox.static /bin/busybox
+RUN [ "/bin/busybox", "--install", "/bin" ]
 ADD https://curl.se/ca/cacert.pem /cacert.pem
 ENV PATH /opt/stubby/bin:$PATH
 WORKDIR /opt/stubby
 EXPOSE 8053/udp
 ENTRYPOINT ["/tini", "--"]
-CMD ["/opt/stubby/bin/stubby"]
+CMD ["/opt/stubby/bin/stubby", "-C", "/conf/stubby.yml"]
